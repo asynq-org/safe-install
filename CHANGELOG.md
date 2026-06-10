@@ -4,6 +4,7 @@ This file is generated from conventional-style git commit subjects by `npm run c
 
 ## Documentation
 
+- docs: add landing page favicon (5299c6d0)
 - docs: add agent instructions (88bee088)
 
 ## Other
