@@ -2,6 +2,10 @@
 
 This file is generated from conventional-style git commit subjects by `npm run changelog`.
 
+## Fixes
+
+- fix: stream sandbox progress and allow guards (41b8e5fe)
+
 ## Documentation
 
 - docs: add landing page favicon (5299c6d0)
