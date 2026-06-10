@@ -134,7 +134,13 @@ async function runPackageManagerGate(packageManager, rawArgs, context) {
     packageManager,
     packageManagerArgs: normalized.args,
     config,
-    json: options.json,
+    onProgress: options.json ? null : (message) => console.error(`[safe-install] ${message}`),
+    streamOutput: options.json ? null : ({ phaseName, stream, chunk }) => {
+      const lines = chunk.split(/\r?\n/);
+      for (const line of lines) {
+        if (line.length > 0) console.error(`[safe-install:${phaseName}:${stream}] ${line}`);
+      }
+    },
   });
   report.packageAge = packageAge;
 

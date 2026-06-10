@@ -6,7 +6,11 @@ export function runGuard(args, context) {
     throw new Error("guard requires a package manager: safe-install guard <npm|pnpm|yarn|bun>");
   }
 
-  if (context.env.SAFE_INSTALL_INTERNAL_APPLY === "1" || context.env.SAFE_INSTALL_GUARD_BYPASS === "1") {
+  if (
+    context.env.SAFE_INSTALL_INTERNAL_APPLY === "1" ||
+    context.env.SAFE_INSTALL_SANDBOX === "1" ||
+    context.env.SAFE_INSTALL_GUARD_BYPASS === "1"
+  ) {
     return;
   }
 

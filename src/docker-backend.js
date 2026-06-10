@@ -1,5 +1,5 @@
 import { mkdtemp, mkdir, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
-import { spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
 import { join, relative } from "node:path";
 import { tmpdir } from "node:os";
 import { copyProjectForSandbox } from "./project-copy.js";
@@ -24,7 +24,7 @@ const SENSITIVE_PATHS = [
   ".yarnrc.yml",
 ];
 
-export async function runDockerSandbox({ cwd, packageManager, packageManagerArgs, config }) {
+export async function runDockerSandbox({ cwd, packageManager, packageManagerArgs, config, onProgress, streamOutput }) {
   const def = PACKAGE_MANAGER_DEFS[packageManager];
   const sandboxRoot = await mkdtemp(join(tmpdir(), "safe-install-"));
   const workspace = join(sandboxRoot, "workspace");
@@ -58,10 +58,12 @@ export async function runDockerSandbox({ cwd, packageManager, packageManagerArgs
   };
 
   try {
+    onProgress?.("Preparing isolated Docker workspace.");
     const copyState = await copyProjectForSandbox(cwd, workspace);
     report.copiedBytes = copyState.copiedBytes;
     report.skippedPaths = copyState.skipped;
     await createFakeHome(home);
+    onProgress?.(`Copied project into sandbox (${formatBytes(copyState.copiedBytes)}).`);
 
     const before = await snapshotTrackedFiles(workspace);
     const sensitiveBefore = await snapshotSensitivePaths(workspace, home);
@@ -72,7 +74,9 @@ export async function runDockerSandbox({ cwd, packageManager, packageManagerArgs
       shellQuote(def.sandboxInstall(packageManagerArgs)),
     ].filter(Boolean).join(" && ");
 
-    const installPhase = runDocker({
+    onProgress?.("Running resolve-and-fetch phase with lifecycle scripts disabled.");
+    const installPhase = await runDocker({
+      phaseName: "resolve-and-fetch",
       image,
       workspace,
       home,
@@ -80,13 +84,16 @@ export async function runDockerSandbox({ cwd, packageManager, packageManagerArgs
       memory: config.sandbox.docker.memory,
       pidsLimit: config.sandbox.docker.pidsLimit,
       script: installCommand,
+      streamOutput,
     });
     report.phases.push({ name: "resolve-and-fetch", ...summarizeProcess(installPhase) });
 
     if (installPhase.status !== 0) {
+      onProgress?.(`resolve-and-fetch failed with exit code ${installPhase.status}.`);
       report.status = "failed";
       return report;
     }
+    onProgress?.("resolve-and-fetch completed.");
 
     const rebuildCommand = [
       def.bootstrap,
@@ -94,7 +101,9 @@ export async function runDockerSandbox({ cwd, packageManager, packageManagerArgs
       shellQuote(def.sandboxRebuild()),
     ].filter(Boolean).join(" && ");
 
-    const rebuildPhase = runDocker({
+    onProgress?.("Running offline-script-detonation phase with Docker network disabled.");
+    const rebuildPhase = await runDocker({
+      phaseName: "offline-script-detonation",
       image,
       workspace,
       home,
@@ -102,11 +111,15 @@ export async function runDockerSandbox({ cwd, packageManager, packageManagerArgs
       memory: config.sandbox.docker.memory,
       pidsLimit: config.sandbox.docker.pidsLimit,
       script: rebuildCommand,
+      streamOutput,
     });
     report.phases.push({ name: "offline-script-detonation", ...summarizeProcess(rebuildPhase) });
 
     if (rebuildPhase.status !== 0) {
+      onProgress?.(`offline-script-detonation failed with exit code ${rebuildPhase.status}.`);
       report.status = "failed";
+    } else {
+      onProgress?.("offline-script-detonation completed.");
     }
 
     const after = await snapshotTrackedFiles(workspace);
@@ -117,8 +130,10 @@ export async function runDockerSandbox({ cwd, packageManager, packageManagerArgs
 
     if (report.suspiciousWrites.length > 0) {
       report.status = "blocked";
+      onProgress?.(`Blocked: detected ${report.suspiciousWrites.length} suspicious write(s).`);
     }
 
+    onProgress?.("Sandbox analysis complete.");
     return report;
   } finally {
     if (!process.env.SAFE_INSTALL_KEEP_SANDBOX) {
@@ -127,7 +142,7 @@ export async function runDockerSandbox({ cwd, packageManager, packageManagerArgs
   }
 }
 
-function runDocker({ image, workspace, home, networkNone, memory, pidsLimit, script }) {
+function runDocker({ phaseName, image, workspace, home, networkNone, memory, pidsLimit, script, streamOutput }) {
   const args = [
     "run",
     "--rm",
@@ -142,6 +157,8 @@ function runDocker({ image, workspace, home, networkNone, memory, pidsLimit, scr
     "HOME=/safe-home",
     "-e",
     "CI=1",
+    "-e",
+    "SAFE_INSTALL_SANDBOX=1",
     "-v",
     `${workspace}:/workspace`,
     "-v",
@@ -156,9 +173,30 @@ function runDocker({ image, workspace, home, networkNone, memory, pidsLimit, scr
 
   args.push(image, "/bin/sh", "-lc", script);
 
-  return spawnSync("docker", args, {
-    encoding: "utf8",
-    maxBuffer: 10 * 1024 * 1024,
+  return new Promise((resolve, reject) => {
+    const child = spawn("docker", args, {
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    let stdout = "";
+    let stderr = "";
+
+    child.stdout.setEncoding("utf8");
+    child.stderr.setEncoding("utf8");
+
+    child.stdout.on("data", (chunk) => {
+      stdout += chunk;
+      streamOutput?.({ phaseName, stream: "stdout", chunk });
+    });
+
+    child.stderr.on("data", (chunk) => {
+      stderr += chunk;
+      streamOutput?.({ phaseName, stream: "stderr", chunk });
+    });
+
+    child.on("error", reject);
+    child.on("close", (status, signal) => {
+      resolve({ status, signal, stdout, stderr });
+    });
   });
 }
 
@@ -174,6 +212,12 @@ function summarizeProcess(result) {
 function trimOutput(value) {
   const text = value || "";
   return text.length > 4000 ? `${text.slice(0, 4000)}\n[truncated]` : text;
+}
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KiB`;
+  return `${(bytes / 1024 / 1024).toFixed(1)} MiB`;
 }
 
 async function createFakeHome(home) {

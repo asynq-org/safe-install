@@ -21,7 +21,7 @@ export async function checkMinimumPackageAge({ packageManager, args, config, now
       status: "skipped",
       checks: [],
       violations: [],
-      warnings: ["No direct package specs found; transitive package age checks require lockfile diff support."],
+      warnings: ["No direct package specs found; package age checks only run for explicit package specs in this command."],
     };
   }
 

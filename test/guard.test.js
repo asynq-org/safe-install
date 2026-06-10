@@ -31,3 +31,14 @@ test("guard allows internal safe-install apply", () => {
     process.exitCode = previousExitCode;
   }
 });
+
+test("guard allows safe-install sandbox runs", () => {
+  const previousExitCode = process.exitCode;
+  process.exitCode = undefined;
+  try {
+    runGuard(["npm"], { env: { SAFE_INSTALL_SANDBOX: "1" } });
+    assert.equal(process.exitCode, undefined);
+  } finally {
+    process.exitCode = previousExitCode;
+  }
+});
