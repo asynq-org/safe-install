@@ -1,0 +1,57 @@
+{
+  "name": "@asynq.org/safe-install",
+  "version": "0.1.0",
+  "description": "Local-first safe dependency install gate for JavaScript and TypeScript repositories.",
+  "type": "module",
+  "author": {
+    "name": "Asynq Root",
+    "email": "root@asynq.org",
+    "url": "https://asynq.org"
+  },
+  "bin": {
+    "safe-install": "bin/safe-install.js"
+  },
+  "scripts": {
+    "test": "node --test",
+    "changelog": "node scripts/generate-changelog.mjs",
+    "changelog:check": "node scripts/generate-changelog.mjs --check",
+    "version:bump": "node scripts/next-version-bump.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asynq-org/safe-install.git"
+  },
+  "bugs": {
+    "url": "https://github.com/asynq-org/safe-install/issues"
+  },
+  "homepage": "https://github.com/asynq-org/safe-install#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "dependency-security",
+    "npm",
+    "pnpm",
+    "yarn",
+    "bun",
+    "sandbox",
+    "supply-chain",
+    "ai-agents"
+  ],
+  "files": [
+    "bin",
+    "src",
+    "docs",
+    "public",
+    "LICENSE",
+    "NOTICE",
+    "SECURITY.md",
+    "README.md",
+    "ROADMAP.md",
+    "CHANGELOG.md"
+  ]
+}

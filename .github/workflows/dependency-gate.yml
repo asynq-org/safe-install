@@ -1,0 +1,27 @@
+name: Dependency Gate
+
+on:
+  pull_request:
+    paths:
+      - "package.json"
+      - "package-lock.json"
+      - "pnpm-lock.yaml"
+      - "yarn.lock"
+      - "bun.lock"
+      - "bun.lockb"
+      - "safe-install.yaml"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+        if: hashFiles('package-lock.json') != ''
+      - run: npm test
+      - run: node bin/safe-install.js ci --base "origin/${{ github.base_ref }}"
