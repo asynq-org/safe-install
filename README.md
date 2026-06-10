@@ -103,6 +103,20 @@ The default flow is:
 5. Report changed dependency files and suspicious writes.
 6. With `--apply`, update the real project with install scripts disabled.
 
+## Reading the Report
+
+The text report is printed in a box so it stays visually separate from streamed Docker logs.
+
+- `Status` is the final decision. `passed` means the dry run did not find a blocking issue. `failed` means a sandbox phase returned a non-zero exit code. `blocked` means safe-install detected a policy violation, such as suspicious writes.
+- `Phases` shows the sandbox stages. `resolve-and-fetch` installs or updates dependencies in the copied project with lifecycle scripts disabled. `offline-script-detonation` then runs rebuild/build scripts in a second Docker container with networking disabled.
+- `Tracked dependency files changed` lists lockfiles and manifest files that changed inside the sandbox copy.
+- `Package age checks` lists explicit package specs that were checked against the configured minimum publish age.
+- `Package age warnings` are non-blocking gaps, usually because the command did not include an explicit package name or metadata could not be verified under the current policy.
+- `Package age violations` are blocking publish-age policy failures.
+- `Suspicious writes` means sandboxed scripts changed sensitive paths such as editor, agent, npm, SSH, or cloud credential locations.
+- `Notes` summarizes important sandbox guarantees and apply behavior.
+- `<phase> stderr` is shown only for failed phases and contains the captured package-manager error output.
+
 ## Supported Package Managers
 
 Initial JavaScript and TypeScript support:

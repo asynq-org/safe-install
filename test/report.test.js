@@ -25,4 +25,6 @@ test("formats report with sandbox guarantees", () => {
   assert.match(text, /Isolation: strong/);
   assert.match(text, /Real secrets mounted: no/);
   assert.match(text, /modified: package-lock\.json/);
+  assert.match(text, /^\+-+\+/);
+  assert.match(text, /\+-+\+$/);
 });

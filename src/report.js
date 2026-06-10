@@ -66,5 +66,39 @@ export function formatReport(report) {
     }
   }
 
-  return lines.join("\n");
+  return boxText(lines);
+}
+
+const BOX_WIDTH = 88;
+const BOX_INNER_WIDTH = BOX_WIDTH - 4;
+
+function boxText(lines) {
+  const border = `+${"-".repeat(BOX_WIDTH - 2)}+`;
+  const boxed = [border];
+
+  for (const line of lines) {
+    const wrapped = wrapLine(line, BOX_INNER_WIDTH);
+    for (const part of wrapped) {
+      boxed.push(`| ${part.padEnd(BOX_INNER_WIDTH, " ")} |`);
+    }
+  }
+
+  boxed.push(border);
+  return boxed.join("\n");
+}
+
+function wrapLine(line, width) {
+  if (!line) return [""];
+  const parts = [];
+  let remaining = line;
+
+  while (remaining.length > width) {
+    let index = remaining.lastIndexOf(" ", width);
+    if (index <= 0) index = width;
+    parts.push(remaining.slice(0, index));
+    remaining = remaining.slice(index).trimStart();
+  }
+
+  parts.push(remaining);
+  return parts;
 }
