@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="safe-install">
+  <rect width="64" height="64" rx="14" fill="#030706"/>
+  <path d="M32 9 50 17v12c0 11.6-7.2 21.8-18 25.8C21.2 50.8 14 40.6 14 29V17l18-8Z" fill="#10342d" stroke="#60f3b2" stroke-width="3" stroke-linejoin="round"/>
+  <path d="m24.2 32.3 5.2 5.2 11-13" fill="none" stroke="#e7fff4" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M32 9 50 17v12c0 11.6-7.2 21.8-18 25.8V9Z" fill="#60f3b2" opacity=".12"/>
+</svg>
