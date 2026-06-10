@@ -2,4 +2,12 @@
 
 This file is generated from conventional-style git commit subjects by `npm run changelog`.
 
-No commits yet.
+## Documentation
+
+- docs: add agent instructions (88bee088)
+
+## Other
+
+- ci: fix release workflow condition (02bd9cb0)
+- chore: initial safe-install repository (f0a31795)
+
