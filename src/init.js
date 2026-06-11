@@ -138,6 +138,25 @@ export async function writeShims(cwd) {
     const path = join(binDir, pm);
     await writeFile(path, shimText(pm), { mode: 0o755 });
   }
+  await ensureGitignoreEntry(cwd, ".safe-install/");
+}
+
+async function ensureGitignoreEntry(cwd, entry) {
+  const path = join(cwd, ".gitignore");
+  let existing = "";
+
+  try {
+    existing = await readFile(path, "utf8");
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+  }
+
+  const lines = existing.split(/\r?\n/).map((line) => line.trim());
+  if (lines.includes(entry)) return false;
+
+  const prefix = existing && !existing.endsWith("\n") ? "\n" : "";
+  await writeFile(path, `${existing}${prefix}${entry}\n`);
+  return true;
 }
 
 function shimText(packageManager) {

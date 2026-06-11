@@ -39,6 +39,9 @@ test("onboarding with defaults writes config, agent files, repo shims, and packa
   const npmShim = await readFile(join(dir, ".safe-install", "bin", "npm"), "utf8");
   assert.match(npmShim, /safe-install npm/);
 
+  const gitignore = await readFile(join(dir, ".gitignore"), "utf8");
+  assert.match(gitignore, /^\.safe-install\/$/m);
+
   const agents = await readFile(join(dir, "AGENTS.md"), "utf8");
   assert.match(agents, /Never run npm, pnpm, yarn, or bun directly/);
 

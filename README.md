@@ -143,6 +143,8 @@ Python and Rust are planned. See [ROADMAP.md](ROADMAP.md).
 - `.safe-install/bin/yarn`
 - `.safe-install/bin/bun`
 
+The generated `.safe-install/` directory is added to `.gitignore`; regenerate these shims per checkout.
+
 Add the shim directory before normal package managers:
 
 ```bash

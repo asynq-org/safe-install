@@ -40,3 +40,15 @@ test("init appends agent instructions without replacing existing content", async
   assert.match(agents, /Never run npm, pnpm, yarn, or bun directly/);
   assert.equal(agents.match(/safe-install:start/g).length, 1);
 });
+
+test("init enforce adds safe-install directory to gitignore once", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "safe-install-init-"));
+  await writeFile(join(dir, ".gitignore"), "node_modules\n");
+
+  await initProject(dir, ["--enforce"], {});
+  await initProject(dir, ["--enforce"], {});
+
+  const gitignore = await readFile(join(dir, ".gitignore"), "utf8");
+  assert.match(gitignore, /^node_modules$/m);
+  assert.equal(gitignore.match(/^\.safe-install\/$/gm).length, 1);
+});
