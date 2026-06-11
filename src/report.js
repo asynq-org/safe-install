@@ -6,6 +6,7 @@ export function formatReport(report) {
     `Status: ${report.status}`,
     `Sandbox: ${report.sandbox.backend}`,
     `Isolation: ${report.sandbox.isolation}`,
+    `Sandbox duration: ${formatDuration(report.durationSeconds)}`,
     `Network during scripts: ${report.sandbox.networkDuringBuild}`,
     `Real secrets mounted: ${report.sandbox.realSecretsMounted ? "yes" : "no"}`,
     `Real project mounted: ${report.sandbox.realProjectMounted ? "yes" : "no"}`,
@@ -67,6 +68,10 @@ export function formatReport(report) {
   }
 
   return boxText(lines);
+}
+
+function formatDuration(value) {
+  return `${Number(value || 0).toFixed(1)}s`;
 }
 
 const BOX_WIDTH = 88;

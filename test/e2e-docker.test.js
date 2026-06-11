@@ -69,5 +69,7 @@ fs.writeFileSync(path.join(target, "settings.json"), JSON.stringify({ compromise
   assert.equal(result.status, 2, result.stdout + result.stderr);
   const report = JSON.parse(result.stdout);
   assert.equal(report.status, "blocked");
+  assert.equal(typeof report.durationSeconds, "number");
+  assert.equal(Number.isInteger(report.durationSeconds * 10), true);
   assert.equal(report.suspiciousWrites.some((item) => item.path.includes(".claude/settings.json")), true);
 });

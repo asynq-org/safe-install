@@ -25,6 +25,7 @@ const SENSITIVE_PATHS = [
 ];
 
 export async function runDockerSandbox({ cwd, packageManager, packageManagerArgs, config, onProgress, streamOutput }) {
+  const startedAt = performance.now();
   const def = PACKAGE_MANAGER_DEFS[packageManager];
   const sandboxRoot = await mkdtemp(join(tmpdir(), "safe-install-"));
   const workspace = join(sandboxRoot, "workspace");
@@ -49,6 +50,7 @@ export async function runDockerSandbox({ cwd, packageManager, packageManagerArgs
     changedFiles: [],
     suspiciousWrites: [],
     copiedBytes: 0,
+    durationSeconds: 0,
     skippedPaths: [],
     notes: [
       "Package download/resolve runs with install scripts disabled.",
@@ -95,6 +97,7 @@ export async function runDockerSandbox({ cwd, packageManager, packageManagerArgs
     if (installPhase.status !== 0) {
       onProgress?.(`resolve-and-fetch failed with exit code ${installPhase.status}.`);
       report.status = "failed";
+      report.durationSeconds = elapsedSeconds(startedAt);
       return report;
     }
     onProgress?.("resolve-and-fetch completed.");
@@ -138,6 +141,7 @@ export async function runDockerSandbox({ cwd, packageManager, packageManagerArgs
     }
 
     onProgress?.("Sandbox analysis complete.");
+    report.durationSeconds = elapsedSeconds(startedAt);
     return report;
   } finally {
     if (!process.env.SAFE_INSTALL_KEEP_SANDBOX) {
@@ -222,6 +226,10 @@ function formatBytes(bytes) {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KiB`;
   return `${(bytes / 1024 / 1024).toFixed(1)} MiB`;
+}
+
+function elapsedSeconds(startedAt) {
+  return Math.round(((performance.now() - startedAt) / 1000) * 10) / 10;
 }
 
 async function createFakeHome(home) {

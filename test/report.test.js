@@ -13,6 +13,7 @@ test("formats report with sandbox guarantees", () => {
       realSecretsMounted: false,
       realProjectMounted: false,
     },
+    durationSeconds: 1.24,
     phases: [
       { name: "resolve-and-fetch", status: 0 },
       { name: "offline-script-detonation", status: 99, stderr: "first line\nsecond line" },
@@ -23,6 +24,7 @@ test("formats report with sandbox guarantees", () => {
   });
 
   assert.match(text, /Isolation: strong/);
+  assert.match(text, /Sandbox duration: 1\.2s/);
   assert.match(text, /Real secrets mounted: no/);
   assert.match(text, /modified: package-lock\.json/);
   assert.match(text, /^\+-+\+/);
