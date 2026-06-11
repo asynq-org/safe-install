@@ -1,6 +1,6 @@
 {
   "name": "@asynq.org/safe-install",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Local-first safe dependency install gate for JavaScript and TypeScript repositories.",
   "type": "module",
   "author": {

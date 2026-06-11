@@ -9,6 +9,7 @@ This file is generated from conventional-style git commit subjects by `npm run c
 
 ## Fixes
 
+- fix: ignore generated repo shims (7d66ae06)
 - fix: ignore sandbox package guards (45a23849)
 - fix: stream sandbox progress and allow guards (41b8e5fe)
 
