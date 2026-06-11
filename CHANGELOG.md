@@ -2,6 +2,10 @@
 
 This file is generated from conventional-style git commit subjects by `npm run changelog`.
 
+## Features
+
+- feat: apply dependency changes by default (353da82b)
+
 ## Fixes
 
 - fix: ignore sandbox package guards (45a23849)
