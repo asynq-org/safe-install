@@ -13,7 +13,7 @@ test("guard blocks raw package manager installs", () => {
     runGuard(["npm"], { env: {} });
     assert.equal(process.exitCode, 99);
     assert.match(messages.join("\n"), /blocked raw npm install/);
-    assert.match(messages.join("\n"), /safe-install npm install <pkg> --apply/);
+    assert.match(messages.join("\n"), /safe-install npm install <pkg>/);
   } finally {
     console.error = originalError;
     process.exitCode = previousExitCode;

@@ -19,7 +19,7 @@ test("install global shims apply writes package manager shims", async () => {
   await installGlobalShims(["--apply"], { env: { HOME: home } });
 
   const npmShim = await readFile(join(home, ".safe-install", "shims", "npm"), "utf8");
-  assert.match(npmShim, /safe-install "\$pm" "\$@" --apply/);
+  assert.match(npmShim, /safe-install "\$pm" "\$@"/);
   assert.match(npmShim, /find_safe_install_root/);
 });
 

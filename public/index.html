@@ -233,7 +233,7 @@ No files were changed.</code></pre>
                 <td><span class="dash">-</span></td>
               </tr>
               <tr>
-                <th scope="row">Real project untouched until explicit apply</th>
+                <th scope="row">Real project untouched until sandbox passes</th>
                 <td><span class="check">✓</span></td>
                 <td><span class="dash">-</span></td>
                 <td><span class="dash">-</span></td>
@@ -305,7 +305,7 @@ No files were changed.</code></pre>
         <div class="section-heading">
           <p class="eyebrow">Command surface</p>
           <h2>Every command the CLI exposes.</h2>
-          <p>Use onboarding for first setup. Dry runs are the default for dependency changes and global shim changes. Real writes require `--apply`.</p>
+          <p>Use onboarding for first setup. Dependency changes run the sandbox first and apply automatically when the report passes. Use `--dry-run` for report-only checks.</p>
         </div>
 
         <div class="command-matrix">
@@ -358,7 +358,7 @@ No files were changed.</code></pre>
               </div>
               <div>
                 <dt><code>safe-install npm install &lt;pkg&gt;</code></dt>
-                <dd>Runs an npm install dry-run before the real project changes.</dd>
+                <dd>Runs npm install through the Docker sandbox, then applies with scripts disabled when the report passes.</dd>
               </div>
               <div>
                 <dt><code>safe-install pnpm add &lt;pkg&gt;</code></dt>
@@ -366,7 +366,7 @@ No files were changed.</code></pre>
               </div>
               <div>
                 <dt><code>safe-install yarn add &lt;pkg&gt;</code></dt>
-                <dd>Tests Yarn dependency changes before touching the real workspace.</dd>
+                <dd>Tests Yarn dependency changes before applying to the real workspace.</dd>
               </div>
               <div>
                 <dt><code>safe-install bun add &lt;pkg&gt;</code></dt>
@@ -381,8 +381,8 @@ No files were changed.</code></pre>
                 <dd>Allows removals through the same report and apply workflow.</dd>
               </div>
               <div>
-                <dt><code>... --apply</code></dt>
-                <dd>After the sandbox passes, updates the real project with scripts disabled.</dd>
+                <dt><code>... --dry-run</code></dt>
+                <dd>Prints the sandbox report without changing the real project.</dd>
               </div>
               <div>
                 <dt><code>... --json</code></dt>
@@ -528,7 +528,7 @@ No files were changed.</code></pre>
             <span>05</span>
             <svg><use href="#icon-file"></use></svg>
             <h3>Report and apply</h3>
-            <p>Only `--apply` updates the real project, with install scripts disabled.</p>
+            <p>Passing reports apply automatically; `--dry-run` stops after the sandbox report.</p>
           </div>
         </div>
       </section>

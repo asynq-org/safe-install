@@ -157,7 +157,7 @@ async function runPackageManagerGate(packageManager, rawArgs, context) {
 
   if (!options.apply) {
     if (!options.json) {
-      console.log("\nDry run only. Re-run with --apply to update the real project with scripts disabled.");
+      console.log("\nDry run only. Re-run without --dry-run to update the real project with scripts disabled.");
     }
     return;
   }
@@ -181,12 +181,14 @@ async function runPackageManagerGate(packageManager, rawArgs, context) {
 
 function parseRunOptions(args) {
   const packageManagerArgs = [];
-  let apply = false;
+  let apply = true;
   let json = false;
 
   for (const arg of args) {
     if (arg === "--apply") {
       apply = true;
+    } else if (arg === "--dry-run") {
+      apply = false;
     } else if (arg === "--json") {
       json = true;
     } else {
@@ -197,6 +199,8 @@ function parseRunOptions(args) {
   if (packageManagerArgs.length === 0) {
     throw new Error("missing package manager command, for example: safe-install npm install lodash");
   }
+
+  if (json) apply = false;
 
   return { apply, json, packageManagerArgs };
 }
@@ -213,11 +217,12 @@ Usage:
   safe-install uninstall-global-shims [--apply]
   safe-install verify-lockfile [--base <ref>] [--json]
   safe-install ci [--base <ref>] [--json]
-  safe-install npm install <pkg> [--apply] [--json]
-  safe-install pnpm update <pkg> [--apply] [--json]
-  safe-install yarn add <pkg> [--apply] [--json]
-  safe-install bun add <pkg> [--apply] [--json]
+  safe-install npm install <pkg> [--dry-run] [--json]
+  safe-install pnpm update <pkg> [--dry-run] [--json]
+  safe-install yarn add <pkg> [--dry-run] [--json]
+  safe-install bun add <pkg> [--dry-run] [--json]
 
-Default behavior is a Docker sandbox dry run. The real project is changed only with --apply.
+Default behavior runs the Docker sandbox first, then applies to the real project with scripts disabled only if the sandbox passes.
+Use --dry-run or --json for a report without changing the real project. --apply is still accepted for backwards compatibility.
 `);
 }

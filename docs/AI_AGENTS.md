@@ -22,15 +22,15 @@ bun remove
 Agents must run:
 
 ```bash
-safe-install npm install <pkg> --apply
-safe-install npm update <pkg> --apply
-safe-install pnpm add <pkg> --apply
-safe-install pnpm update <pkg> --apply
-safe-install yarn add <pkg> --apply
-safe-install bun add <pkg> --apply
+safe-install npm install <pkg>
+safe-install npm update <pkg>
+safe-install pnpm add <pkg>
+safe-install pnpm update <pkg>
+safe-install yarn add <pkg>
+safe-install bun add <pkg>
 ```
 
-Use dry runs without `--apply` for investigation.
+Use `--dry-run` for investigation without changing the real project.
 
 ## Generated Files
 

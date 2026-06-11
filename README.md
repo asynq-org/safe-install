@@ -79,7 +79,7 @@ Minimum package age protection is enabled by default at 48 hours. Set `policy.mi
 
 ## Usage
 
-Dry run first:
+Install or update through the sandbox gate:
 
 ```bash
 safe-install npm install lodash
@@ -88,10 +88,10 @@ safe-install yarn add zod
 safe-install bun add hono
 ```
 
-Apply only after the sandbox passes:
+Report only without changing the real project:
 
 ```bash
-safe-install npm install lodash --apply
+safe-install npm install lodash --dry-run
 ```
 
 The default flow is:
@@ -101,13 +101,13 @@ The default flow is:
 3. Resolve and fetch dependencies with package scripts disabled.
 4. Run rebuild/build-script detonation in a second Docker container with `--network none`.
 5. Report changed dependency files and suspicious writes.
-6. With `--apply`, update the real project with install scripts disabled.
+6. If the sandbox passes, update the real project with install scripts disabled.
 
 ## Reading the Report
 
 The text report is printed in a box so it stays visually separate from streamed Docker logs.
 
-- `Status` is the final decision. `passed` means the dry run did not find a blocking issue. `failed` means a sandbox phase returned a non-zero exit code. `blocked` means safe-install detected a policy violation, such as suspicious writes.
+- `Status` is the final decision. `passed` means the sandbox did not find a blocking issue. `failed` means a sandbox phase returned a non-zero exit code. `blocked` means safe-install detected a policy violation, such as suspicious writes.
 - `Phases` shows the sandbox stages. `resolve-and-fetch` installs or updates dependencies in the copied project with lifecycle scripts disabled. `offline-script-detonation` then runs rebuild/build scripts in a second Docker container with networking disabled.
 - `Tracked dependency files changed` lists lockfiles and manifest files that changed inside the sandbox copy.
 - `Package age checks` lists explicit package specs that were checked against the configured minimum publish age.

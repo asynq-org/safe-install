@@ -14,7 +14,7 @@ developer or agent
   -> run package manager with scripts disabled
   -> run script detonation offline
   -> produce report
-  -> optionally apply to real project with scripts disabled
+  -> apply to real project with scripts disabled unless --dry-run was used
 ```
 
 ## Docker Backend
@@ -46,7 +46,7 @@ The Docker backend therefore runs two phases:
 
 ## Apply Mode
 
-`--apply` never runs a normal raw install in the real project. It re-runs the package-manager command with scripts disabled.
+When the sandbox passes, safe-install never runs a normal raw install in the real project. It re-runs the package-manager command with scripts disabled. Use `--dry-run` to stop after the report.
 
 This avoids the common failure mode where a tool performs a safe dry run and then executes the dangerous command for real.
 

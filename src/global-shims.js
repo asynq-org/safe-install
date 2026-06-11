@@ -157,10 +157,7 @@ is_dependency_command() {
 }
 
 if root=$(find_safe_install_root) && is_dependency_command "\${1:-}"; then
-  case " $* " in
-    *" --apply "*) exec safe-install "$pm" "$@" ;;
-    *) exec safe-install "$pm" "$@" --apply ;;
-  esac
+  exec safe-install "$pm" "$@"
 fi
 
 shim_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)

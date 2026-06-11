@@ -74,15 +74,15 @@ Never run npm, pnpm, yarn, or bun directly when installing, updating, or removin
 Use safe-install:
 
 \`\`\`bash
-safe-install npm install <pkg> --apply
-safe-install npm update <pkg> --apply
-safe-install pnpm add <pkg> --apply
-safe-install pnpm update <pkg> --apply
-safe-install yarn add <pkg> --apply
-safe-install bun add <pkg> --apply
+safe-install npm install <pkg>
+safe-install npm update <pkg>
+safe-install pnpm add <pkg>
+safe-install pnpm update <pkg>
+safe-install yarn add <pkg>
+safe-install bun add <pkg>
 \`\`\`
 
-Run dry checks without --apply when you only need a risk report.
+Run dry checks with --dry-run when you only need a risk report.
 
 If a raw package manager command is blocked by a shim, retry through safe-install. Do not bypass the policy unless the human maintainer explicitly approves it.
 `;
@@ -96,7 +96,7 @@ alwaysApply: true
 
 When installing, updating, or removing JavaScript/TypeScript dependencies, never run npm, pnpm, yarn, or bun directly.
 
-Use safe-install with --apply for real project changes. Use a dry run without --apply for inspection.
+Use safe-install for real project changes. Use --dry-run for inspection.
 `;
 }
 
@@ -165,7 +165,7 @@ if [ "\${SAFE_INSTALL_INTERNAL_APPLY:-}" = "1" ]; then
 fi
 
 echo "safe-install policy: do not run ${packageManager} directly in this repository." >&2
-echo "Use: safe-install ${packageManager} $* --apply" >&2
+echo "Use: safe-install ${packageManager} $*" >&2
 exit 99
 `;
 }

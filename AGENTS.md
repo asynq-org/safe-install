@@ -10,13 +10,12 @@ Use the local CLI when dependency changes are necessary:
 
 ```bash
 node bin/safe-install.js npm install <package>
-node bin/safe-install.js npm install <package> --apply
-node bin/safe-install.js pnpm add <package> --apply
-node bin/safe-install.js yarn add <package> --apply
-node bin/safe-install.js bun add <package> --apply
+node bin/safe-install.js pnpm add <package>
+node bin/safe-install.js yarn add <package>
+node bin/safe-install.js bun add <package>
 ```
 
-Run a dry check first unless the user explicitly asks for a real dependency change. The real project should only be changed after the safe-install report passes.
+Use `--dry-run` when the user asks for investigation only. The real project is changed only after the safe-install report passes.
 
 ## Development Checks
 
