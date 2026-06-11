@@ -28,7 +28,7 @@
   "bugs": {
     "url": "https://github.com/asynq-org/safe-install/issues"
   },
-  "homepage": "https://github.com/asynq-org/safe-install#readme",
+  "homepage": "http://safe-install.asynq.org/",
   "publishConfig": {
     "access": "public"
   },

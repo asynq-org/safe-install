@@ -2,6 +2,8 @@
 
 Local-first safe dependency install gate for JavaScript and TypeScript repositories.
 
+[Landing page](http://safe-install.asynq.org/) · [GitHub](https://github.com/asynq-org/safe-install)
+
 `safe-install` wraps package-manager installs and updates in a Docker sandbox before anything touches the real project. It is built for teams and AI coding agents that should not run raw `npm install`, `pnpm update`, `yarn add`, or `bun add` directly.
 
 No dashboard. No telemetry. No dependency graph upload.
