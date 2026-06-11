@@ -13,6 +13,7 @@ This file is generated from conventional-style git commit subjects by `npm run c
 
 ## Documentation
 
+- docs: link landing page homepage (85d336f0)
 - docs: frame sandbox report output (3677c17a)
 - docs: add landing page favicon (5299c6d0)
 - docs: add agent instructions (88bee088)
