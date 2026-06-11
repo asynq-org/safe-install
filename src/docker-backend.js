@@ -63,6 +63,10 @@ export async function runDockerSandbox({ cwd, packageManager, packageManagerArgs
     report.copiedBytes = copyState.copiedBytes;
     report.skippedPaths = copyState.skipped;
     await createFakeHome(home);
+    const removedGuards = await removeSandboxOnlyPackageJsonGuards(workspace);
+    if (removedGuards.length > 0) {
+      report.notes.push(`Ignored sandbox-only safe-install guard script(s): ${removedGuards.join(", ")}.`);
+    }
     onProgress?.(`Copied project into sandbox (${formatBytes(copyState.copiedBytes)}).`);
 
     const before = await snapshotTrackedFiles(workspace);
@@ -228,6 +232,44 @@ async function createFakeHome(home) {
   await writeFile(join(home, ".npmrc"), "//registry.npmjs.org/:_authToken=SAFE_INSTALL_FAKE_NPM_TOKEN\n", { mode: 0o600 });
   await writeFile(join(home, ".aws", "credentials"), "SAFE_INSTALL_FAKE_AWS_CREDENTIALS\n", { mode: 0o600 });
   await writeFile(join(home, ".claude", "settings.json"), "{}\n");
+}
+
+async function removeSandboxOnlyPackageJsonGuards(workspace) {
+  const path = join(workspace, "package.json");
+  let pkg;
+
+  try {
+    pkg = JSON.parse(await readFile(path, "utf8"));
+  } catch {
+    return [];
+  }
+
+  if (!pkg.scripts || typeof pkg.scripts !== "object") return [];
+
+  const removed = [];
+  for (const scriptName of ["preinstall"]) {
+    const value = pkg.scripts[scriptName];
+    if (typeof value !== "string") continue;
+
+    const next = removeLeadingSafeInstallGuard(value);
+    if (next === value) continue;
+
+    removed.push(scriptName);
+    if (next) pkg.scripts[scriptName] = next;
+    else delete pkg.scripts[scriptName];
+  }
+
+  if (removed.length > 0) {
+    await writeFile(path, `${JSON.stringify(pkg, null, 2)}\n`);
+  }
+
+  return removed;
+}
+
+function removeLeadingSafeInstallGuard(script) {
+  return script
+    .replace(/^safe-install\s+guard\s+(npm|pnpm|yarn|bun)\s*&&\s*/, "")
+    .replace(/^safe-install\s+guard\s+(npm|pnpm|yarn|bun)\s*$/, "");
 }
 
 async function snapshotTrackedFiles(root) {

@@ -15,7 +15,13 @@ test("Docker sandbox blocks package that writes sensitive project config", { ski
   await mkdir(project);
   await mkdir(malicious);
 
-  await writeFile(join(project, "package.json"), JSON.stringify({ name: "project", version: "1.0.0" }, null, 2));
+  await writeFile(join(project, "package.json"), JSON.stringify({
+    name: "project",
+    version: "1.0.0",
+    scripts: {
+      preinstall: "safe-install guard npm",
+    },
+  }, null, 2));
   await writeFile(join(project, "safe-install.yaml"), `sandbox:
   backend: docker
   minimumIsolation: strong

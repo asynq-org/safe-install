@@ -15,7 +15,7 @@ test("formats report with sandbox guarantees", () => {
     },
     phases: [
       { name: "resolve-and-fetch", status: 0 },
-      { name: "offline-script-detonation", status: 0 },
+      { name: "offline-script-detonation", status: 99, stderr: "first line\nsecond line" },
     ],
     changedFiles: [{ path: "package-lock.json", status: "modified" }],
     suspiciousWrites: [],
@@ -27,4 +27,6 @@ test("formats report with sandbox guarantees", () => {
   assert.match(text, /modified: package-lock\.json/);
   assert.match(text, /^\+-+\+/);
   assert.match(text, /\+-+\+$/);
+  assert.match(text, /\| first line\s+\|/);
+  assert.match(text, /\| second line\s+\|/);
 });

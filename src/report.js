@@ -77,9 +77,11 @@ function boxText(lines) {
   const boxed = [border];
 
   for (const line of lines) {
-    const wrapped = wrapLine(line, BOX_INNER_WIDTH);
-    for (const part of wrapped) {
-      boxed.push(`| ${part.padEnd(BOX_INNER_WIDTH, " ")} |`);
+    for (const rawLine of String(line).split(/\r?\n/)) {
+      const wrapped = wrapLine(rawLine, BOX_INNER_WIDTH);
+      for (const part of wrapped) {
+        boxed.push(`| ${part.padEnd(BOX_INNER_WIDTH, " ")} |`);
+      }
     }
   }
 
