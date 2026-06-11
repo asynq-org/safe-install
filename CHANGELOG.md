@@ -4,6 +4,7 @@ This file is generated from conventional-style git commit subjects by `npm run c
 
 ## Features
 
+- feat: report sandbox duration (231645f4)
 - feat: apply dependency changes by default (353da82b)
 
 ## Fixes
